@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Portfolio Modeling</title>
+   <script src="https://cdn.jsdelivr.net/npm/msgpack-lite@0.1.26/dist/msgpack.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/chroma-js@2.1.2/chroma.min.js"></script>
+   <script src="js//modelViewer.js" defer></script> 
+   <script src="js//styling.js" defer></script>
+   <link rel="stylesheet" href="css//normal.css">
+</head>
+<body>
+   <div id="output"></div>
+   <canvas id="myChart"></canvas>
+   <label class="switch">
+      <input type="checkbox" id="toggleScale">
+      <span class="slider round"></span>
+      <span class="linear">Linear</span> 
+      <span class="log">Log</span>
+    </label>
+
+    <button id="addTemplateBtn">Add Allocation</button>
+    <div id="allocationTemplate" class="hidden allocationTemplate" allocvalid="false">
+      <div class="header">
+         <p>Allocation</p>
+         <button>X</button>
+      </div>
+      <div class="entry">
+         <label for="3Month">3 Month Treasuries</label>
+         <input type="number" id="3Month" name="3Month" min="0" max="100">
+      </div>
+      <div class="entry">
+         <label for="10Yr">10 Yr Treasuries</label>
+         <input type="number" id="10Yr" name="10Yr" min="0" max="100">
+      </div>
+      <div class="entry">
+         <label for="BaaCorp">Baa Corporate</label>
+         <input type="number" id="BaaCorp" name="BaaCorp" min="0" max="100">
+      </div>
+      <div class="entry">
+         <label for="Gold">Gold</label>
+         <input type="number" id="Gold" name="Gold" min="0" max="100">
+      </div>
+      <div class="entry">
+         <label for="REITs">REITs</label>
+         <input type="number" id="REITs" name="REITs" min="0" max="100">
+      </div>
+      <div class="entry">
+         <label for="S&P500">S&P 500</label>
+         <input type="number" id="S&P500" name="S&P500" min="0" max="100">
+      </div>
+      <div class="entry">
+         <label for="Years">Years</label>
+         <input type="number" id="Years" name="Years" min="1" max="100" value="1">
+      </div>
+    </div>
+    
+    <br>
+    <div id="allocContainer"></div>
+    <br>
+    <a class="hidden" id="badallocmsg">Allocation must add to 100%</a>
+    <button id="modelupdatebtn">Update</button>
+
+    <br>
+    <div class="dropdown">
+      <button class="dropbtn">Sources</button>
+      <div class="dropdown-content" id="sources">
+         <ul>
+            <li><a href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html">Historical Returns on Stocks, Bonds, and Bills</a></li>
+            <li><a href="https://fred.stlouisfed.org/series/CPIAUCSL">Inflation</a></li>
+            <li><a href="https://fred.stlouisfed.org/series/GDPA">US GDP</a></li>
+            <li><a href="https://www.multpl.com/s-p-500-pe-ratio/table/by-year">S&P 500 PE Ratio</a></li>
+            <li><a href="https://www.multpl.com/10-year-treasury-rate/table/by-year">10Yr Treasury Rates</a></li>
+            <li><a href="https://www.reit.com/data-research/reit-indexes/annual-index-values-returns">REIT Returns, All Equity</a></li>
+            <li><a href="https://shillerdata.com/">CAPE</a></li>
+         </ul>
+      </div>
+    </div>
+    <p>I Love this game</p>
+</body>
+</html>

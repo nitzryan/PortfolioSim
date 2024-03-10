@@ -1,0 +1,4 @@
+data/scenarios
+data/scenariosSlowMerge
+__pycache__
+*.pt
