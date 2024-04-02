@@ -11,16 +11,151 @@
 </head>
 <body>
    <div id="output"></div>
+   <p>Disclaimer: This website is for information purposes only and should not be
+      considered as investment advice.
+   </p>
+   <div class="dropdown">
+      <button class="dropbtn">Overview</button>
+      <div class="dropdown-content" id="overview">
+         <p>This project is an attempt to see how different portfolio compositions
+            would perform in different scenarios.  This approach involved developing
+            a Markov Model simulation for major asset classes that was developed through
+            a neural network trained on data starting in 1929.  Another major factor in
+            this approach is that it gives a number of different outcomes for the same
+            portfolio.  This is important as over long time horizons, small changes in
+            returns compound to a large difference (over 40 years, a 6% return will result
+            in a $1 becoming $10.29, while a 6.5% return will result in $12.42). This is in
+            contrast to many retirement calculators which attempt to find exactly how much
+            will be needed, which is impossible to do.
+         </p>
+      </div>
+   </div>
+   <br>
+
+   <div class="dropdown">
+      <button class="dropbtn">Methods</button>
+      <div class="dropdown-content" id="methods">
+         <p>To develop a Markov Model simulation, historical data on asset returns, as
+            well as other financial data were used.
+            These additional values do not attribute directly to asset
+            returns, but they could potentially hold some important information that could
+            influence how markets behave; a crash that occured with a dramatic decrease in
+            GDP may behave differently over long periods of time than a crash that occured
+            during a period where the economy did not have these issues.
+         </p>
+         <p>For the network predictions, the goal was to predict a distribution rather than
+            a singular result.  Predicting a single result would lead to the network predicting
+            average returns and would not predict crashes or booms.  Instead, the model will be
+            predicting a distribution of returns for each time step, then when a simulation is
+            run it will select a value from that distribution.  This distribution will be generated
+            by predicting for each variable how many std deviations they will be from the mean.  
+            Methods that use neural networks
+            to predict distributions were not used because they introduce bias in assuming what
+            the distribution will be; they are not the same for all variables, and in the past
+            they have typically not been normally distributed: S&P and REIT returns have a large
+            left-tail where market crashes often have large losses, while Gold returns have a 
+            left-tail that only has been 2 std deviations below the mean, but a right-tail being
+            5 std deviations above it.
+         </p>
+         <p>For this approach, an issue that comes up is that if the network were to predict a
+            distribution for all variables, the number of buckets will grow exponentially.  To solve
+            this problem, rather than have a single neural network predict all of the variables,
+            a neural network was developed for each individual variable. The variables were
+            ordered in a way where those which were thought to be more causal were given lower
+            indices, and those that are more of an effect of the environment are placed lower.
+            For example, GDP growth is given a lower index than S&P 500 returns, with the
+            justification being that GDP growth would influence S&P returns rather than S&P
+            returns influencing GDP.  This is a potential source of bias in these results
+            as there is not a formulaic way to determine this.
+         </p>
+         <p>For the nth variable, the network is attempting to predict the return given all
+            of the variables in the previous timestep, and the 0 through n-1th variable in this
+            time step.  To reduce the amount of input variables used to train the models,
+            only certain variables which were eligible were considered.  These variables were
+            determined using correlations between variables, as well as my domain knowledge
+            of how certain variables are believed to interact.  For example, the returns on 
+            10-Year Treasuries only used the previous 10yr rate as well as the change in the
+            10-Year rate for this time step.  While this does introduce bias into the model,
+            it significantly reduced the variance and led to much better results than without.
+         </p>
+         <p>Another important consideration is that for REITs, there is only data on them going
+            back to 1972.  The REIT investment vehicle was only created in 1960, and it took
+            a significant amount of time for enough to reach the public markets to get a 
+            diversified set of properties that represents how they are today.  One approach would
+            be to simply limit the data through 1972, but that would cut the amount of datapoints
+            in half, and the data pre-1972 likely has some differences from the post-1972 data.
+            Instead, an additional neural network was trained on the post-1972 data to guess
+            what the pre-1972 REIT data was, and then that was used to train the simulation networks.
+         </p>
+      </div>
+   </div>
+   <br>
+   <div class="dropdown">
+      <button class="dropbtn">Takeaways</button>
+      <div class="dropdown-content" id="takeaways">
+         <p>One of the major takeaways from this experiment was looking at the wide range
+            of possibilities that could occur from a single portfolio.  For a portfolio that
+            was 100% stocks, the 5th percentile return was 3.6x, while the 95th percentile return
+            was 36.3x.  For retirement-focused investing, where the goal is not to maximize returns
+            but to ensure that one has enough, it could be benefitial to use methods that
+            increase returns in the low-return scenarios by selling upside in the high-return ones.
+         </p>
+         <p>Another major takeaway is the importance of diversification.  Over 40 years, a 100% stock
+            portfolio has a 5th percentile return of 3.6x.  A 100% REIT portfolio has a 5th percentile
+            return of 2.9x.  A 50-50 Stock/REIT portolfio has a 5th percentile return of 7.7x.
+         </p>
+         <p>A third takeaway is the poor performance of portfolios that hold bonds over long periods of
+            time.  While it is not surprising that these portfolios have a lower expected return, a 
+            50/50 Stock/REIT portfolio has a better 5th percentile performance over 40 years than a
+            40/40/20 Stock/REIT/10yr over the same period (7.7x vs 6.2x).  Many portfolios that use
+            historical results for 80/20 portfolios start from the 1970s, when the 10 year interest rate
+            was typically above 6% and went briefly over 14%.  This is contrasted with roughly 4% as of
+            early 2024, leaving them with far less upside if inflation is low.
+         </p>
+         <p>On gold, I have typically found with my model that it does not increase portfolio
+            performance compared to solely S&P/REITs.  This is in constrast to many other approaches
+            based on historical performance(see <a href="https://www.artemiscm.com/research-papers/category/Research+Paper">The Allegory of the Hawk and Serpent</a> as these analyses typically have lead to a higher-recommended
+            gold allocation than advisors typically say, often around 20%.  One of the concerns I have about
+            this with my model is that gold has a significant amount of its returns in short periods of
+            time (returns of 127% in 1979, 73% in 1973 and 66% in 1974), so if my model is not able to
+            correctly capture the extreme results, it could be significantly affecting the results.
+         </p>
+         <p>Another area of concern is the limited memory of the model.  There are not a large number of
+            data points, so only a first order model was used.  This helped to prevent overfitting, but
+            this does result in a loss of information from previous terms.  This could lead to this model
+            having variables reverting to their mean much faster than it may in reality.  This is a major
+            issue in long-term financial models, as there is not enough data for many of the modern neural-network
+            architectures to be useful.
+         </p>
+      </div>
+   </div>
+   <br>
+   <p>All amounts shown are inflation-adjusted USD.
+   </p>
+   
    <canvas id="myChart"></canvas>
    <label class="switch">
       <input type="checkbox" id="toggleScale">
       <span class="slider round"></span>
       <span class="linear">Linear</span> 
       <span class="log">Log</span>
-    </label>
+    </label> 
+    <br/>
+
+    <div id="ScenarioInput" class="entry">
+      <label for="ScenarioNum">Scenario</label>
+      <input type="number" id="ScenarioNum" name="ScenarioNum" min="0" max="1000" value="0">
+    </div>  
+    <br>
+
+    <div id="startAmount" class="entry">
+      <label for="StartAmountInput">Start Amount</label>
+      <input type="number" id="StartAmountInput" name="StartAmountInput" min="1" value="1000">
+    </div>
+    <br>
 
     <button id="addTemplateBtn">Add Allocation</button>
-    <div id="allocationTemplate" class="hidden allocationTemplate" allocvalid="false">
+    <div id="allocationTemplate" class="hidden allocationItem" allocvalid="false">
       <div class="header">
          <p>Allocation</p>
          <button>X</button>
@@ -53,11 +188,16 @@
          <label for="Years">Years</label>
          <input type="number" id="Years" name="Years" min="1" max="100" value="1">
       </div>
+      <div class="entry">
+         <label for="Inflow">Inflow</label>
+         <input type="number" id="Inflow" name="Inflow" value="0">
+      </div>
     </div>
     
     <br>
-    <div id="allocContainer"></div>
+    <div id="allocContainer" class="inputContainer"></div>
     <br>
+
     <a class="hidden" id="badallocmsg">Allocation must add to 100%</a>
     <button id="modelupdatebtn">Update</button>
 
@@ -76,6 +216,5 @@
          </ul>
       </div>
     </div>
-    <p>I Love this game</p>
 </body>
 </html>

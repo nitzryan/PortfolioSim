@@ -1,11 +1,15 @@
-// Select the button element
-var dropdownButton = document.querySelector('.dropbtn');
+var dropdownButtons = document.getElementsByClassName("dropbtn");
 
-dropdownButton.addEventListener('click', function() {
-  var dropdownContent = document.getElementById('sources');
-  if (dropdownContent.style.display === 'block') {
-    dropdownContent.style.display = 'none';
-  } else {
-    dropdownContent.style.display = 'block';
-  }
-});
+for (let i = 0; i < dropdownButtons.length; i++) {
+  dropdownButtons[i].addEventListener('click', function(event) {
+    event.stopPropagation();
+    let parent = event.target.parentElement;
+    let content = parent.children[1];
+    console.log(content);
+    if (content.style.display === 'block') {
+      content.style.display = 'none';
+    } else {
+      content.style.display = 'block';
+    }
+  });
+}
