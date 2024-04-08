@@ -9,14 +9,16 @@
     height: 34px;
   }
   
-  /* Hide default HTML checkbox */
   .switch input { 
     opacity: 0;
     width: 0;
     height: 0;
   }
+
+  .switch span {
+    color: #000;
+  }
   
-  /* The slider */
   .slider {
     position: absolute;
     cursor: pointer;
@@ -24,7 +26,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: #A50;
     -webkit-transition: .4s;
     transition: .4s;
   }
@@ -36,17 +38,13 @@
     width: 26px;
     left: 4px;
     bottom: 4px;
-    background-color: white;
+    background-color: #303;
     -webkit-transition: .4s;
     transition: .4s;
   }
   
   input:checked + .slider {
-    background-color: #2196F3;
-  }
-  
-  input:focus + .slider {
-    box-shadow: 0 0 1px #2196F3;
+    background-color: #0A0;
   }
   
   input:checked + .slider:before {
@@ -55,7 +53,6 @@
     transform: translateX(55px);
   }
   
-  /* Rounded sliders */
   .slider.round {
     border-radius: 34px;
   }
@@ -64,7 +61,6 @@
     border-radius: 50%;
   }
   
-  /* Styling the labels - position them on the sides */
   .linear, .log {
       position: absolute;
       top: 8px;
@@ -76,10 +72,9 @@
   
   .log {
       left: 10px; 
-      opacity: 0; /* Initially hide the 'Log' label */
+      opacity: 0; 
   }
   
-  /* Show the 'Log' label when checked, and hide 'linear' */
   input:checked ~ .log {
       opacity: 1;
   }
@@ -88,15 +83,13 @@
       opacity: 0;
   }
 
-/* Dropdown container */
 .dropdown {
-    position: relative; /* Allows positioning of dropdown content */
+    position: relative; 
     display: inline-block;
   }
   
-  /* Dropdown button */
   .dropbtn {
-    background-color: #4CAF50; /* Example color */
+    background-color: #404; 
     color: white;
     padding: 10px; 
     border: none;
@@ -105,19 +98,16 @@
   
   .dropdown-content {
     display: none; 
-    background-color: transparent; /* Match the background of your page if desired */
+    background-color: transparent; 
     width: 100%;
-    box-shadow: none; /* Removing the box-shadow for a seamless look */
+    box-shadow: none; 
   }
   
-  /* Show dropdown on hover or click */
   .dropdown-content, .dropdown-content { 
     display: none; 
   }
 
-
-/* Alloc container */
-#allocContainer {
+.inputContainer {
   display: flex;                  
   flex-direction: row;            
   flex-wrap: nowrap;              
@@ -126,50 +116,88 @@
   max-width: fit-content;        
 }
 
-.allocationTemplate {
-  margin-right: 10px;            
-  border-right: 1px solid #ccc;  
+.allocationItem {
+  margin-right: 0px;            
+  border-left: 3px solid #ccc;  
+  border-top: 3px solid #ccc;
+  border-bottom: 3px solid #ccc;
   display: flex;                 
   flex-direction: column;
   justify-content: center;
-  margin-bottom: 10px;           
+  margin-bottom: 0px;           
 }
 
-.allocationTemplate div { /* Target the div containing label and input */
+.allocationItem div {
   display: flex;        
   align-items: center;  
 }
 
-.allocationTemplate label {
+.entry label {
   text-align: left; 
   white-space: nowrap;  
   overflow: hidden;     
   text-overflow: ellipsis;  
+  color: #000;
 }
 
-.allocationTemplate input {
-  text-align: right; /* Right-justify the input text */
+.entry input {
+  text-align: right;
   margin-left: auto;
+  background-color: #222;
 }
 
-/* Remove the last element's right border */
-.allocationTemplate:last-child {
-  border-right: none; 
+#startAmount, #ScenarioInput {
+  background-color: #0A0;
+  border: 3px solid #ccc;
+  margin: 1em;
+  margin-left: 0;
+  display: inline-block;
 }
 
-.allocationTemplate[allocvalid="true"] {
-  background-color: lightgreen;
+.allocationItem:last-child {
+  border-right: 3px solid #ccc;  
 }
 
-.allocationTemplate[allocvalid="false"] {
-  background-color: lightcoral;
+.allocationItem[allocvalid="true"] {
+  background-color: #0A0;
 }
 
-.allocationTemplate .header { /* target the new header container */
+.allocationItem[allocvalid="false"] {
+  background-color: #A00;
+}
+
+.allocationItem .header {
   display: flex;
   justify-content: space-between;
 }
 
+.header p {
+  color: #000;
+}
+
 canvas {
   background-color: #222;
+}
+
+body {
+  background-color: #222;
+}
+
+* {
+  color: #ccc;
+  font-size:large;
+}
+
+button {
+  background-color: #404;
+  border-radius: 1em;
+  border: 0;
+  box-shadow: none;
+  color: #ccc;
+  margin: 1em;
+  border: 0.125em solid #CCC;
+}
+
+.dropdown button {
+  border-radius: 0;
 }

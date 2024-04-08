@@ -41,21 +41,30 @@ function setAlpha(rgbaColor, newAlpha) {
     return palette[index];
   }
 
-function plotMultipleArrays(scenarioData, years) {
+function plotMultipleArrays(scenarioData, years, scenario, scenarioNum) {
     let k = Object.keys(scenarioData)[0];
     if (years < 0 || years > scenarioData[k].length) {
         years = scenarioData[k].length;
     }
 
     let currentIndex = 0;
-    const datasets = Object.keys(scenarioData).map(key => ({
+    let datasets = Object.keys(scenarioData).map(key => ({
       label: key,
       data: scenarioData[key].slice(0, years + 1),
       backgroundColor: getColor(currentIndex, Object.keys(scenarioData).length),
       borderColor: getColor(currentIndex++, Object.keys(scenarioData).length)
     }));
+
+    // Add this scenario
+    if (scenarioNum != 0) {
+        datasets.push({
+            label: "Scenario " + scenarioNum,
+            data: scenario.slice(0, years + 1),
+            backgroundColor: "#0000ff",
+            borderColor: '#0000ff'
+        });
+    }
   
-    // Assuming you have a <canvas> element with id 'myChart' in your HTML
     const ctx = document.getElementById('myChart').getContext('2d');
   
     if (myChart != null) {
@@ -71,6 +80,9 @@ function plotMultipleArrays(scenarioData, years) {
             },
             backgroundColor: 'rgba(0,0,0,0.1)',
             options: {
+              animation: {
+                duration: 0
+              },
               scales: {
                   y: {
                       type: isLogScale ? 'logarithmic' : 'linear'
@@ -85,7 +97,7 @@ function plotMultipleArrays(scenarioData, years) {
               events: ['mousemove', 'mouseout'], // Listen for hover and mouseout
               hover: {   
                 animation: {
-                    duration: 100
+                    duration: 10
                   },     
                   mode: 'nearest', // Or the mode you want to use        
                   intersect: true    },
@@ -150,12 +162,13 @@ function extractNthElements(jsonObject, n) {
     return resultArray;
 }
 
-function calculateCumulativeReturns(scenarioData, assetAllocationList, yearList) {
+let startAmountElement = document.getElementById("StartAmountInput");
+function calculateCumulativeReturns(scenarioData, assetAllocationList, yearList, inflowList) {
     var res = {};
     let scenarioNumber = 0;
 
     for (const scenario of scenarioData) {
-        const portfolioValues = [1000]; // Start with $1000
+        const portfolioValues = [startAmountElement.value];
         let allocationIndex = 0;
         let yearCount = 0;
 
@@ -169,7 +182,11 @@ function calculateCumulativeReturns(scenarioData, assetAllocationList, yearList)
                 const stepReturn = calculatePortfolioReturn(assetReturns, assetAllocation);
 
                 // Calculate value at the end of this step
-                const newValue = portfolioValues[portfolioValues.length-1] * (1 + stepReturn);
+                let newValue = portfolioValues[portfolioValues.length-1] * (1 + stepReturn);
+                newValue += inflowList[allocationIndex];
+                if (newValue < 0) {
+                    newValue = 0;
+                }
                 portfolioValues.push(newValue);
                 yearCount++;
             }
@@ -213,11 +230,22 @@ function calculateTotalYears(yearList) {
     return result;
 }
 
-function UpdateModelData(allocationList, yearList) {
-    const returnsOverTime = calculateCumulativeReturns(modelData, allocationList, yearList);
+let scenarioNumElement = document.getElementById("ScenarioNum");
+function UpdateModelData(allocationList, yearList, inflowList) {
+    const returnsOverTime = calculateCumulativeReturns(modelData, allocationList, yearList, inflowList);
     const totalYears = yearList.reduce((sum, year) => sum + year, 0);
     var percentiles = calculatePercentiles(returnsOverTime);
-    plotMultipleArrays(percentiles, totalYears)
+    console.log(returnsOverTime['Scenario 1'])
+    console.log(returnsOverTime)
+    
+    // Check for if a specific scenario should be chosen
+    let scenario = []
+    let scenarioNum = parseInt(scenarioNumElement.value);
+    if (scenarioNum != 0) {
+        scenario = returnsOverTime['Scenario ' + scenarioNum];
+    }
+
+    plotMultipleArrays(percentiles, totalYears, scenario, scenarioNum)
 }
 
 var ctx = document.getElementById('myChart').getContext('2d');
@@ -238,19 +266,22 @@ var allocContainer = document.getElementById('allocContainer')
 modelupdatebtn.addEventListener('click', () => {
     // Get allocation 
     let children = allocContainer.children;
-    assetAllocation = []
-    years = []
+    let assetAllocation = [];
+    let assetYears = [];
+    let assetInflows = [];
+
     for (let i = 0; i < children.length; i++) {
         let inputs = children[i].children;
-        var thisAlloc = []
+        var thisAlloc = [];
         for (let i = 1; i < 7; i++) {
             thisAlloc.push(parseInt(inputs[i].children[1].value)/100);
         }
         assetAllocation.push(thisAlloc);
-        years.push(parseInt(inputs[7].children[1].value));
+        assetYears.push(parseInt(inputs[7].children[1].value));
+        assetInflows.push(parseInt(inputs[8].children[1].value));
     }
 
-    UpdateModelData(assetAllocation, years);
+    UpdateModelData(assetAllocation, assetYears, assetInflows);
 })
 
 function allocIsValid(inputElements) {
@@ -327,7 +358,14 @@ allocContainer.children[0].children[6].children[1].value = 100;
 allocContainer.children[0].children[7].children[1].value = 40;
 allocContainer.children[0].children[6].children[1].dispatchEvent(new Event('input'));
 
-/* Run Upon Loading */
+scenarioNumElement.addEventListener('input', function() {
+    if (modelupdatebtn.classList.contains('hidden')) {
+        return;
+    }
+    modelupdatebtn.dispatchEvent(new Event('click'));
+})
+
+// Run Upon Loading
 
 async function func() {
     console.log("Hello");
