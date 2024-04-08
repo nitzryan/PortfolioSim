@@ -330,7 +330,8 @@ allocContainer.children[0].children[6].children[1].dispatchEvent(new Event('inpu
 /* Run Upon Loading */
 
 async function func() {
-    await fetchAndDecodeMsgPackFile('models//scenarios.msgpack')
+    console.log("Hello");
+    await fetchAndDecodeMsgPackFile('https://github.com/nitzryan/PortfolioSim/master/models/scenarios.msgpack')
     modelupdatebtn.dispatchEvent(new Event('click'));
 }
 
