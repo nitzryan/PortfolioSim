@@ -368,7 +368,6 @@ scenarioNumElement.addEventListener('input', function() {
 // Run Upon Loading
 
 async function func() {
-    console.log("Hello");
     await fetchAndDecodeMsgPackFile('https://cdn.jsdelivr.net/gh/nitzryan/PortfolioSim@master/models/scenarios.msgpack')
     modelupdatebtn.dispatchEvent(new Event('click'));
 }
